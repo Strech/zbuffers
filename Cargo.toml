@@ -6,3 +6,4 @@ edition = "2018"
 
 [dependencies]
 zellij-tile = "0.40.1"
+unicode-width = "0.1.10"
