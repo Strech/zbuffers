@@ -56,6 +56,9 @@ impl State {
     fn handle_key(&mut self, key: Key) -> bool {
         let mut should_render = false;
         match key {
+            Key::Esc => {
+                hide_self();
+            }
             Key::Up => {
                 self.tabs.move_selection_up();
                 should_render = true;
@@ -64,15 +67,16 @@ impl State {
                 self.tabs.move_selection_down();
                 should_render = true;
             }
-            Key::Esc => {
-                hide_self();
+            Key::Backspace => {
+                self.tabs.pop_search_character();
+                should_render = true;
             }
             Key::Char('\n') => {
-                self.tabs.switch_to_selected_tab();
+                self.tabs.go_to_selected_tab();
                 should_render = true;
             }
             Key::Char(character) => {
-                // self.tabs.push_search_character(character);
+                self.tabs.push_search_character(character);
                 should_render = true;
             }
             _ => {}

@@ -1,13 +1,23 @@
+use fuzzy_matcher::skim::SkimMatcherV2;
+use fuzzy_matcher::FuzzyMatcher;
 use zellij_tile::prelude::*;
 
 #[derive(Debug, Default)]
 pub struct TabList {
-    pub tab_infos: Vec<TabInfo>,
-    pub selected_index: Option<usize>,
-    pub selected_search_index: Option<usize>,
-    pub search_results: Vec<SearchResult>,
-    pub search_term: String,
-    pub is_searching: bool,
+    tab_infos: Vec<TabInfo>,
+    selected_index: Option<usize>,
+    selected_search_index: Option<usize>,
+    search_results: Vec<SearchResult>,
+    search_term: String,
+    is_searching: bool,
+}
+
+#[derive(Debug)]
+pub struct SearchResult {
+    score: i64,
+    indices: Vec<usize>,
+    tab_name: String,
+    is_current_tab: bool,
 }
 
 impl TabList {
@@ -39,6 +49,102 @@ impl TabList {
         print_table_with_coordinates(table, x, y + 3, Some(table_columns), Some(table_rows));
     }
 
+    pub fn move_selection_down(&mut self) {
+        if self.is_searching {
+            match self.selected_search_index.as_mut() {
+                Some(search_index) => {
+                    *search_index = search_index.saturating_add(1);
+                }
+                None => {
+                    if !self.search_results.is_empty() {
+                        self.selected_search_index = Some(0);
+                    }
+                }
+            }
+        } else {
+            match self.selected_index {
+                None => {
+                    if !self.tab_infos.is_empty() {
+                        self.selected_index = Some(0);
+                    }
+                }
+                Some(selected_tab) => {
+                    if self.tab_infos.len() > selected_tab + 1 {
+                        self.selected_index = Some(selected_tab.saturating_add(1));
+                    } else {
+                        self.selected_index = None;
+                    }
+                }
+            }
+        }
+    }
+
+    pub fn move_selection_up(&mut self) {
+        if self.is_searching {
+            match self.selected_search_index.as_mut() {
+                Some(search_index) => {
+                    *search_index = search_index.saturating_sub(1);
+                }
+                None => {
+                    if !self.search_results.is_empty() {
+                        self.selected_search_index = Some(0);
+                    }
+                }
+            }
+        } else {
+            match self.selected_index {
+                None => {
+                    if !self.tab_infos.is_empty() {
+                        self.selected_index = Some(self.tab_infos.len().saturating_sub(1))
+                    }
+                }
+                Some(selected_tab) => {
+                    if selected_tab > 0 {
+                        self.selected_index = Some(selected_tab.saturating_sub(1));
+                    } else {
+                        self.selected_index = None;
+                    }
+                }
+            }
+        }
+    }
+
+    pub fn go_to_selected_tab(&self) {
+        if self.is_searching {
+            match self.selected_search_index {
+                Some(selected_tab) => match self.search_results.get(selected_tab) {
+                    Some(search_result) => {
+                        close_focus();
+                        go_to_tab_name(&search_result.tab_name)
+                    }
+                    None => (),
+                },
+                None => (),
+            }
+        } else {
+            match self.selected_index {
+                Some(selected_tab) => match self.tab_infos.get(selected_tab) {
+                    Some(tab_info) => {
+                        close_focus();
+                        go_to_tab(tab_info.position as u32)
+                    }
+                    None => (),
+                },
+                None => (),
+            }
+        }
+    }
+
+    pub fn push_search_character(&mut self, character: char) {
+        self.search_term.push(character);
+        self.update_search_term();
+    }
+
+    pub fn pop_search_character(&mut self) {
+        self.search_term.pop();
+        self.update_search_term();
+    }
+
     fn render_search_results(&self, table_rows: usize, _table_columns: usize) -> Table {
         let mut table = Table::new().add_row(vec![" ", " ", " "]); // skip the title row
         let (first_row_index_to_render, last_row_index_to_render) = self.range_to_render(
@@ -51,18 +157,18 @@ impl TabList {
             if let Some(search_result) = self.search_results.get(i) {
                 let is_selected = Some(i) == self.selected_search_index;
                 let mut table_cells = vec![
+                    self.render_tab_info(search_result.is_current_tab),
                     self.render_tab_name(
                         &search_result.tab_name,
                         Some(search_result.indices.clone()),
                     ),
-                    Text::new(""), //self.render_ctime(&search_result.ctime),
-                    Text::new(""), // self.render_more_indication_or_enter_as_needed(
-                                   //     i,
-                                   //     first_row_index_to_render,
-                                   //     last_row_index_to_render,
-                                   //     self.search_results.len(),
-                                   //     is_selected,
-                                   // ),
+                    self.render_more_indication_as_needed(
+                        i,
+                        first_row_index_to_render,
+                        last_row_index_to_render,
+                        self.search_results.len(),
+                        is_selected,
+                    ),
                 ];
 
                 if is_selected {
@@ -83,7 +189,7 @@ impl TabList {
             if let Some(tab_info) = self.tab_infos.get(i) {
                 let is_selected = Some(i) == self.selected_index;
                 let mut table_cells = vec![
-                    self.render_tab_info(tab_info),
+                    self.render_tab_info(tab_info.active),
                     self.render_tab_name(&tab_info.name, None),
                     self.render_more_indication_as_needed(
                         i,
@@ -122,18 +228,18 @@ impl TabList {
         }
     }
 
+    // https://doc.rust-lang.org/std/fmt/index.html#syntax
+    fn render_tab_info(&self, is_current_tab: bool) -> Text {
+        let text = if is_current_tab { "\u{2588}" } else { " " };
+        Text::new(text).color_range(0, ..)
+    }
+
     fn render_tab_name(&self, tab_name: &str, indices: Option<Vec<usize>>) -> Text {
         let text = Text::new(&format!("{:30}", tab_name));
         match indices {
             Some(indices) => text.color_indices(2, indices),
             None => text,
         }
-    }
-
-    // https://doc.rust-lang.org/std/fmt/index.html#syntax
-    fn render_tab_info(&self, tab_info: &TabInfo) -> Text {
-        let text = if tab_info.active { "\u{2588}" } else { " " };
-        Text::new(text).color_range(0, ..)
     }
 
     fn render_more_indication_as_needed(
@@ -161,88 +267,35 @@ impl TabList {
         }
     }
 
-    pub fn move_selection_down(&mut self) {
-        if self.is_searching {
-            match self.selected_search_index.as_mut() {
-                Some(search_index) => {
-                    *search_index = search_index.saturating_add(1);
-                }
-                None => {
-                    if !self.search_results.is_empty() {
-                        self.selected_search_index = Some(0);
-                    }
-                }
-            }
-        } else {
-            match self.selected_index {
-                None => {
-                    if !self.tab_infos.is_empty() {
-                        self.selected_index = Some(0);
-                    }
-                }
-                Some(selected_tab) => {
-                    if self.tab_infos.len() > selected_tab + 1 {
-                        self.selected_index = Some(selected_tab + 1);
-                    } else {
-                        self.selected_index = None;
-                    }
-                }
+    fn update_search_term(&mut self) {
+        let mut matches = vec![];
+        let matcher = SkimMatcherV2::default().use_cache(true);
+
+        for tab_info in &self.tab_infos {
+            if let Some((score, indices)) = matcher.fuzzy_indices(&tab_info.name, &self.search_term)
+            {
+                matches.push(SearchResult {
+                    tab_name: tab_info.name.clone(),
+                    is_current_tab: tab_info.active,
+                    score,
+                    indices,
+                });
             }
         }
-    }
 
-    pub fn move_selection_up(&mut self) {
-        if self.is_searching {
-            match self.selected_search_index.as_mut() {
-                Some(search_index) => {
-                    *search_index = search_index.saturating_sub(1);
-                }
-                None => {
-                    if !self.search_results.is_empty() {
-                        self.selected_search_index = Some(0);
-                    }
+        matches.sort_by(|a, b| b.score.cmp(&a.score));
+        self.search_results = matches;
+        self.is_searching = !self.search_term.is_empty();
+
+        match self.selected_search_index {
+            Some(search_index) => {
+                if self.search_results.is_empty() {
+                    self.selected_search_index = None;
+                } else if search_index >= self.search_results.len() {
+                    self.selected_search_index = Some(self.search_results.len().saturating_sub(1));
                 }
             }
-        } else {
-            match self.selected_index {
-                None => {
-                    if !self.tab_infos.is_empty() {
-                        self.selected_index = Some(self.tab_infos.len().saturating_sub(1))
-                    }
-                }
-                Some(selected_tab) => {
-                    if selected_tab > 0 {
-                        self.selected_index = Some(selected_tab - 1);
-                    } else {
-                        self.selected_index = None;
-                    }
-                }
-            }
+            None => self.selected_search_index = Some(0),
         }
     }
-
-    pub fn switch_to_selected_tab(&self) {
-        match self.selected_index {
-            Some(index) => match self.tab_infos.get(index) {
-                Some(tab_info) => {
-                    close_focus();
-                    switch_tab_to((tab_info.position as u32).saturating_add(1))
-                }
-                None => (),
-            },
-            None => (),
-        }
-    }
-}
-
-// -----------------------------------------------------------------------------
-
-#[derive(Debug)]
-pub struct SearchResult {
-    score: i64,
-    indices: Vec<usize>,
-    // list_item: ListItem,
-    tab_name: String,
-    // tab_position: Option<usize>,
-    // is_current_tab: bool,
 }
