@@ -17,6 +17,7 @@ pub struct SearchResult {
     score: i64,
     indices: Vec<usize>,
     tab_name: String,
+    tab_position: usize,
     is_current_tab: bool,
 }
 
@@ -112,25 +113,23 @@ impl TabList {
     pub fn go_to_selected_tab(&self) {
         if self.is_searching {
             match self.selected_search_index {
-                Some(selected_tab) => match self.search_results.get(selected_tab) {
-                    Some(search_result) => {
+                Some(selected_tab) => {
+                    if let Some(search_result) = self.search_results.get(selected_tab) {
                         close_focus();
-                        go_to_tab_name(&search_result.tab_name)
+                        go_to_tab(search_result.tab_position as u32)
                     }
-                    None => (),
-                },
-                None => (),
+                }
+                None => {}
             }
         } else {
             match self.selected_index {
-                Some(selected_tab) => match self.tab_infos.get(selected_tab) {
-                    Some(tab_info) => {
+                Some(selected_tab) => {
+                    if let Some(tab_info) = self.tab_infos.get(selected_tab) {
                         close_focus();
                         go_to_tab(tab_info.position as u32)
                     }
-                    None => (),
-                },
-                None => (),
+                }
+                None => {}
             }
         }
     }
@@ -276,6 +275,7 @@ impl TabList {
             {
                 matches.push(SearchResult {
                     tab_name: tab_info.name.clone(),
+                    tab_position: tab_info.position,
                     is_current_tab: tab_info.active,
                     score,
                     indices,
