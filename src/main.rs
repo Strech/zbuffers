@@ -1,17 +1,12 @@
 mod tab_list;
-mod ui;
 
 use std::collections::BTreeMap;
-use zellij_tile::prelude::*;
-
-use ui::Colors;
-
 use tab_list::TabList;
+use zellij_tile::prelude::*;
 
 #[derive(Default)]
 struct State {
     tabs: TabList,
-    colors: Colors,
 }
 
 register_plugin!(State);
@@ -23,7 +18,7 @@ impl ZellijPlugin for State {
             // PermissionType::ChangeApplicationState,
         ]);
 
-        subscribe(&[EventType::ModeUpdate, EventType::TabUpdate, EventType::Key]);
+        subscribe(&[EventType::TabUpdate, EventType::Key]);
     }
 
     fn update(&mut self, event: Event) -> bool {
@@ -34,10 +29,6 @@ impl ZellijPlugin for State {
             }
             Event::TabUpdate(tab_infos) => {
                 self.tabs.update(tab_infos);
-                should_render = true;
-            }
-            Event::ModeUpdate(mode_info) => {
-                self.colors = Colors::new(mode_info.style.colors);
                 should_render = true;
             }
             _ => (),

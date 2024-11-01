@@ -36,7 +36,7 @@ impl TabList {
         };
 
         print_text_with_coordinates(search_indication, x.saturating_sub(1), y + 2, None, None);
-        print_table_with_coordinates(table, x + 1, y + 3, Some(table_columns), Some(table_rows));
+        print_table_with_coordinates(table, x, y + 3, Some(table_columns), Some(table_rows));
     }
 
     fn render_search_results(&self, table_rows: usize, _table_columns: usize) -> Table {
@@ -83,13 +83,14 @@ impl TabList {
             if let Some(tab_info) = self.tab_infos.get(i) {
                 let is_selected = Some(i) == self.selected_index;
                 let mut table_cells = vec![
+                    self.render_tab_info(tab_info),
                     self.render_tab_name(&tab_info.name, None),
-                    Text::new(" "), // self.render_ctime(&session.1),
                     self.render_more_indication_as_needed(
                         i,
                         first_row_index_to_render,
                         last_row_index_to_render,
                         self.tab_infos.len(),
+                        is_selected,
                     ),
                 ];
                 if is_selected {
@@ -122,11 +123,17 @@ impl TabList {
     }
 
     fn render_tab_name(&self, tab_name: &str, indices: Option<Vec<usize>>) -> Text {
-        let text = Text::new(tab_name); //.color_range(10, ..);
+        let text = Text::new(&format!("{:30}", tab_name));
         match indices {
-            Some(indices) => text.color_indices(1, indices),
+            Some(indices) => text.color_indices(2, indices),
             None => text,
         }
+    }
+
+    // https://doc.rust-lang.org/std/fmt/index.html#syntax
+    fn render_tab_info(&self, tab_info: &TabInfo) -> Text {
+        let text = if tab_info.active { "\u{2588}" } else { " " };
+        Text::new(text).color_range(0, ..)
     }
 
     fn render_more_indication_as_needed(
@@ -135,9 +142,12 @@ impl TabList {
         first_row_index_to_render: usize,
         last_row_index_to_render: usize,
         results_len: usize,
+        is_selected: bool,
     ) -> Text {
-        if i == first_row_index_to_render && i > 0 {
-            Text::new(format!("+ {} more", first_row_index_to_render)).color_range(1, ..)
+        if is_selected {
+            Text::new("<Enter> - Focus on Tab").color_range(2, ..7)
+        } else if i == first_row_index_to_render && i > 0 {
+            Text::new(format!("+ {} more", first_row_index_to_render)).color_range(0, ..)
         } else if i == last_row_index_to_render.saturating_sub(1)
             && last_row_index_to_render < results_len
         {
@@ -145,7 +155,7 @@ impl TabList {
                 "+ {} more",
                 results_len.saturating_sub(last_row_index_to_render)
             ))
-            .color_range(1, ..)
+            .color_range(0, ..)
         } else {
             Text::new(" ")
         }
