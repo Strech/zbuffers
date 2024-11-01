@@ -15,7 +15,7 @@ impl ZellijPlugin for State {
     fn load(&mut self, configuration: BTreeMap<String, String>) {
         request_permission(&[
             PermissionType::ReadApplicationState,
-            // PermissionType::ChangeApplicationState,
+            PermissionType::ChangeApplicationState,
         ]);
 
         subscribe(&[EventType::TabUpdate, EventType::Key]);
@@ -38,7 +38,6 @@ impl ZellijPlugin for State {
 
     fn render(&mut self, rows: usize, cols: usize) {
         let (x, y, width, height) = self.main_menu_size(rows, cols);
-
         self.tabs.render(height, width, x, y);
     }
 }
@@ -67,6 +66,14 @@ impl State {
             }
             Key::Esc => {
                 hide_self();
+            }
+            Key::Char('\n') => {
+                self.tabs.switch_to_selected_tab();
+                should_render = true;
+            }
+            Key::Char(character) => {
+                // self.tabs.push_search_character(character);
+                should_render = true;
             }
             _ => {}
         }

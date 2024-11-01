@@ -220,6 +220,19 @@ impl TabList {
             }
         }
     }
+
+    pub fn switch_to_selected_tab(&self) {
+        match self.selected_index {
+            Some(index) => match self.tab_infos.get(index) {
+                Some(tab_info) => {
+                    close_focus();
+                    switch_tab_to((tab_info.position as u32).saturating_add(1))
+                }
+                None => (),
+            },
+            None => (),
+        }
+    }
 }
 
 // -----------------------------------------------------------------------------

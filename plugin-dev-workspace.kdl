@@ -1,3 +1,13 @@
+keybinds {
+    normal {
+        bind "Ctrl b" {
+            LaunchOrFocusPlugin "file:target/wasm32-wasi/debug/zbufer.wasm" {
+                floating true
+            }
+        }
+    }
+}
+
 layout {
     tab focus=true {
         pane size=2 borderless=true {
@@ -13,24 +23,36 @@ layout {
             plugin location="zellij:tab-bar"
         }
     }
-    tab
-    tab
-    tab
-    tab
-    tab
-    tab
-    tab
-    tab
-    tab
-    tab
-    tab
-    tab
-    tab
-    tab
-    tab
-    tab
-    tab
-    tab
-    tab
-    tab
+
+    tab_template name="tab-default" {
+        pane size=2 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+
+        pane
+
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+    }
+
+    tab-default
+    tab-default
+    tab-default
+    tab-default
+    tab-default
+    tab-default
+    tab-default
+    tab-default
+    tab-default
+    tab-default
+    tab-default
+    tab-default
+    tab-default
+    tab-default
+    tab-default
+    tab-default
+    tab-default
+    tab-default
+    tab-default
 }
