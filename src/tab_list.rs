@@ -2,7 +2,7 @@ use fuzzy_matcher::skim::SkimMatcherV2;
 use fuzzy_matcher::FuzzyMatcher;
 use zellij_tile::prelude::*;
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct TabList {
     tab_infos: Vec<TabInfo>,
     selected_index: Option<usize>,
@@ -12,13 +12,17 @@ pub struct TabList {
     is_searching: bool,
 }
 
-#[derive(Debug)]
-pub struct SearchResult {
-    score: i64,
-    indices: Vec<usize>,
-    tab_name: String,
-    tab_position: usize,
-    is_current_tab: bool,
+impl Default for TabList {
+    fn default() -> Self {
+        Self {
+            tab_infos: Default::default(),
+            selected_index: Some(0),
+            selected_search_index: Default::default(),
+            search_results: Default::default(),
+            search_term: Default::default(),
+            is_searching: Default::default(),
+        }
+    }
 }
 
 impl TabList {
@@ -298,4 +302,13 @@ impl TabList {
             None => self.selected_search_index = Some(0),
         }
     }
+}
+
+#[derive(Debug)]
+pub struct SearchResult {
+    score: i64,
+    indices: Vec<usize>,
+    tab_name: String,
+    tab_position: usize,
+    is_current_tab: bool,
 }
