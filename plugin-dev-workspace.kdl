@@ -1,13 +1,14 @@
 keybinds {
     normal {
         bind "Ctrl b" {
-            LaunchOrFocusPlugin "file:target/wasm32-wasi/debug/zbufer.wasm" {
+            LaunchOrFocusPlugin "file:target/wasm32-wasip1/debug/zbuffers.wasm" {
                 floating true
             }
         }
     }
 }
 
+// Gruvbox Soft Theme
 themes {
     light {
         fg "#504945"
@@ -41,14 +42,14 @@ themes {
 theme "light"
 
 layout {
-    tab focus=true {
+    tab focus=true name="Compilation" {
         pane size=2 borderless=true {
             plugin location="zellij:status-bar"
         }
 
         pane command="bash" name="COMPILE AND RELOAD PLUGIN" {
-            args "-c" "cargo build && zellij action launch-or-focus-plugin file:target/wasm32-wasi/debug/zbufer.wasm --floating"
-            // args "-c" "cargo build && zellij action start-or-reload-plugin file:target/wasm32-wasi/debug/zbufer.wasm"
+            args "-c" "cargo build && zellij action launch-or-focus-plugin file:target/wasm32-wasip1/debug/zbuffers.wasm --floating"
+            // args "-c" "cargo build && zellij action start-or-reload-plugin file:target/wasm32-wasip1/debug/zbuffers.wasm"
         }
 
         pane size=1 borderless=true {
@@ -68,13 +69,13 @@ layout {
         }
     }
 
-    tab-default
-    tab-default
-    tab-default
-    tab-default
-    tab-default
-    tab-default
-    tab-default
+    tab-default name="Applications"
+    tab-default name="Desktop"
+    tab-default name="Documents"
+    tab-default name="Downloads"
+    tab-default name="Movies"
+    tab-default name="Music"
+    tab-default name="Pictures"
     tab-default
     tab-default
     tab-default

@@ -12,7 +12,7 @@ struct State {
 register_plugin!(State);
 
 impl ZellijPlugin for State {
-    fn load(&mut self, configuration: BTreeMap<String, String>) {
+    fn load(&mut self, _configuration: BTreeMap<String, String>) {
         request_permission(&[
             PermissionType::ReadApplicationState,
             PermissionType::ChangeApplicationState,
@@ -56,14 +56,14 @@ impl State {
     fn handle_key(&mut self, key: Key) -> bool {
         let mut should_render = false;
         match key {
-            Key::Esc => {
+            Key::Esc | Key::Ctrl('c') => {
                 hide_self();
             }
-            Key::Up => {
+            Key::Up | Key::Ctrl('p') => {
                 self.tabs.move_selection_up();
                 should_render = true;
             }
-            Key::Down => {
+            Key::Down | Key::Ctrl('n') => {
                 self.tabs.move_selection_down();
                 should_render = true;
             }
