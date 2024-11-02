@@ -10,7 +10,7 @@ Convenient switching between tabs with search capabilities.
 A [Zellij] plugin heavily inspired by Emacs [vertico/switch-workspace-buffer] and
 Zellij [session-manager] resurection tab.
 
-![screen-recoeding](./misc/screen-recording.mov)
+![screen-recording](./misc/screen-recording.mp4)
 
 # Installation
 
