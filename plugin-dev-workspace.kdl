@@ -8,6 +8,38 @@ keybinds {
     }
 }
 
+themes {
+    light {
+        fg "#504945"
+        bg "#d5c4a1"
+        black "#fbf1c7"
+        red "#9d0006"
+        green "#79740e"
+        yellow "#b57614"
+        blue "#076678"
+        magenta "#8f3f71"
+        cyan "#427b58"
+        white "#3c3836"
+        orange "#af3a03"
+    }
+
+    dark {
+        fg "#7c6f64"
+        bg "#7c6f64"
+        black "#282828"
+        red "#fb4934"
+        green "#b8bb26"
+        yellow "#fabd2f"
+        blue "#83a598"
+        magenta "#d3869b"
+        cyan "#8ec07c"
+        white "#ebdbb2"
+        orange "#fe8019"
+    }
+}
+
+theme "light"
+
 layout {
     tab focus=true {
         pane size=2 borderless=true {
