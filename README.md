@@ -42,14 +42,14 @@ shared_except "locked" {
 
 Plugin key bindings are:
 
-| Key                                    | Action                               |
-|:---------------------------------------|:-------------------------------------|
-| <kbd>Esc</kbd> or <kbd>Ctrl + c</kbd>  | Hide the plugin                      |
-| <kbd>Up</kbd> or <kbd>Ctrl + p</kbd>   | Move up                              |
-| <kbd>Down</kbd> or <kbd>Ctrl + n</kbd> | Move down                            |
-| <kbd>(any character)</kbd>             | Start searching                      |
-| <kbd>Backspace</kbd>                   | Delete character from search         |
-| <kbd>Enter</kbd>                       | Switch to the selected tab           |
+| Key (default)                          | Emacs                      | Vim                 | Action                       |
+|:---------------------------------------|:---------------------------|:--------------------|:-----------------------------|
+| <kbd>Esc</kbd>                         | <kbd>Ctrl + g</kbd>        | <kbd>Ctrl + c</kbd> | Hide the plugin              |
+| <kbd>Up</kbd>                          | <kbd>Ctrl + p</kbd>        | <kbd>Ctrl + k</kbd> | Move up                      |
+| <kbd>Down</kbd>                        | <kbd>Ctrl + n</kbd>        | <kbd>Ctrl + j</kbd> | Move down                    |
+| <kbd>Backspace</kbd>                   |                            |                     | Delete character from search |
+| <kbd>Enter</kbd>                       |                            |                     | Switch to the selected tab   |
+| <kbd>(any character)</kbd>             |                            |                     | Start searching              |
 
 > [!IMPORTANT]
 > Key bindings prefixed with <kbd>Ctrl +</kbd> might interfere with default key bindings

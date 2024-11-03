@@ -56,14 +56,14 @@ impl State {
     fn handle_key(&mut self, key: Key) -> bool {
         let mut should_render = false;
         match key {
-            Key::Esc | Key::Ctrl('c') => {
+            Key::Esc | Key::Ctrl('g' | 'c') => {
                 hide_self();
             }
-            Key::Up | Key::Ctrl('p') => {
+            Key::Up | Key::Ctrl('p' | 'k') => {
                 self.tabs.move_selection_up();
                 should_render = true;
             }
-            Key::Down | Key::Ctrl('n') => {
+            Key::Down | Key::Ctrl('n' | 'j') => {
                 self.tabs.move_selection_down();
                 should_render = true;
             }
