@@ -42,6 +42,10 @@ shared_except "locked" {
 
 Plugin key bindings are:
 
+> [!IMPORTANT]
+> Key bindings prefixed with <kbd>Ctrl +</kbd> might interfere with default key bindings
+
+
 | Key (default)                          | Emacs                      | Vim                 | Action                       |
 |:---------------------------------------|:---------------------------|:--------------------|:-----------------------------|
 | <kbd>Esc</kbd>                         | <kbd>Ctrl + g</kbd>        | <kbd>Ctrl + c</kbd> | Hide the plugin              |
@@ -50,9 +54,6 @@ Plugin key bindings are:
 | <kbd>Backspace</kbd>                   |                            |                     | Delete character from search |
 | <kbd>Enter</kbd>                       |                            |                     | Switch to the selected tab   |
 | <kbd>(any character)</kbd>             |                            |                     | Start searching              |
-
-> [!IMPORTANT]
-> Key bindings prefixed with <kbd>Ctrl +</kbd> might interfere with default key bindings
 
 # Development
 
