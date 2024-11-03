@@ -77,7 +77,7 @@ impl TabList {
                     if self.tab_infos.len() > selected_tab + 1 {
                         self.selected_index = Some(selected_tab.saturating_add(1));
                     } else {
-                        self.selected_index = None;
+                        self.selected_index = Some(0);
                     }
                 }
             }
@@ -107,7 +107,7 @@ impl TabList {
                     if selected_tab > 0 {
                         self.selected_index = Some(selected_tab.saturating_sub(1));
                     } else {
-                        self.selected_index = None;
+                        self.selected_index = Some(self.tab_infos.len().saturating_sub(1));
                     }
                 }
             }
