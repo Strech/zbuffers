@@ -58,7 +58,11 @@ impl TabList {
         if self.is_searching {
             match self.selected_search_index.as_mut() {
                 Some(search_index) => {
-                    *search_index = search_index.saturating_add(1);
+                    if *search_index < self.search_results.len().saturating_sub(1) {
+                        *search_index = search_index.saturating_add(1);
+                    } else {
+                        *search_index = 0;
+                    }
                 }
                 None => {
                     if !self.search_results.is_empty() {
@@ -74,7 +78,7 @@ impl TabList {
                     }
                 }
                 Some(selected_tab) => {
-                    if self.tab_infos.len() > selected_tab + 1 {
+                    if self.tab_infos.len() > selected_tab.saturating_add(1) {
                         self.selected_index = Some(selected_tab.saturating_add(1));
                     } else {
                         self.selected_index = Some(0);
@@ -88,7 +92,11 @@ impl TabList {
         if self.is_searching {
             match self.selected_search_index.as_mut() {
                 Some(search_index) => {
-                    *search_index = search_index.saturating_sub(1);
+                    if *search_index <= 0 {
+                        *search_index = self.search_results.len().saturating_sub(1);
+                    } else {
+                        *search_index = search_index.saturating_sub(1);
+                    }
                 }
                 None => {
                     if !self.search_results.is_empty() {
