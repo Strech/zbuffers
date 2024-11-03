@@ -22,7 +22,7 @@ Zellij [session-manager] resurection tab.
 
 Download the plugin binary from the [latest release]
 
-```console
+```
 $ mkdir -p ~/.config/zellij/plugins && \
    curl -L "https://github.com/strech/zbuffers/releases/latest/download/zbuffers.wasm" \
         -o ~/.config/zellij/plugins/zbuffers.wasm
