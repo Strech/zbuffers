@@ -231,6 +231,7 @@ impl TabList {
         }
     }
 
+    // https://www.compart.com/en/unicode/html
     // https://doc.rust-lang.org/std/fmt/index.html#syntax
     fn render_tab_info(&self, is_current_tab: bool) -> Text {
         let text = if is_current_tab { "\u{2588}" } else { " " };
