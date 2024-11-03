@@ -4,6 +4,7 @@
 [Zellij config]: https://zellij.dev/documentation/configuration.html
 [vertico/switch-workspace-buffer]: https://github.com/minad/vertico
 [session-manager]: https://zellij.dev/documentation/session-resurrection
+[latest release]: https://github.com/strech/zbuffers/releases/latest
 
 Convenient switching between tabs with search capabilities.
 
