@@ -53,29 +53,41 @@ impl State {
         (x, y, width, height)
     }
 
-    fn handle_key(&mut self, key: Key) -> bool {
+    fn handle_key(&mut self, key: KeyWithModifier) -> bool {
         let mut should_render = false;
-        match key {
-            Key::Esc | Key::Ctrl('g' | 'c') => {
+
+        match key.bare_key {
+            BareKey::Esc if key.has_no_modifiers() => {
                 hide_self();
             }
-            Key::Up | Key::Ctrl('p' | 'k') => {
+            BareKey::Up if key.has_no_modifiers() => {
                 self.tabs.move_selection_up();
                 should_render = true;
             }
-            Key::Down | Key::Ctrl('n' | 'j') => {
+            BareKey::Down if key.has_no_modifiers() => {
                 self.tabs.move_selection_down();
                 should_render = true;
             }
-            Key::Backspace => {
+            BareKey::Backspace if key.has_no_modifiers() => {
                 self.tabs.pop_search_character();
                 should_render = true;
             }
-            Key::Char('\n') => {
+            BareKey::Enter if key.has_no_modifiers() => {
                 self.tabs.go_to_selected_tab();
                 should_render = true;
             }
-            Key::Char(character) => {
+            BareKey::Char('g' | 'c') if key.has_modifiers(&[KeyModifier::Ctrl]) => {
+                hide_self();
+            }
+            BareKey::Char('p' | 'k') if key.has_modifiers(&[KeyModifier::Ctrl]) => {
+                self.tabs.move_selection_up();
+                should_render = true;
+            }
+            BareKey::Char('n' | 'j') if key.has_modifiers(&[KeyModifier::Ctrl]) => {
+                self.tabs.move_selection_down();
+                should_render = true;
+            }
+            BareKey::Char(character) if key.has_no_modifiers() => {
                 self.tabs.push_search_character(character);
                 should_render = true;
             }
