@@ -36,6 +36,7 @@ shared_except "locked" {
         LaunchOrFocusPlugin "file:~/.config/zellij/plugins/zbufers.wasm" {
             floating true
         }
+        SwitchToMode "Normal"
     }
 }
 ```
