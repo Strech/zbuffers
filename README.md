@@ -33,7 +33,7 @@ Add this shared key binding into `keybinds` section of your [Zellij config]
 ```
 shared_except "locked" {
     bind "Ctrl b" {
-        LaunchOrFocusPlugin "file:~/.config/zellij/plugins/zbufers.wasm" {
+        LaunchOrFocusPlugin "file:~/.config/zellij/plugins/zbuffers.wasm" {
             floating true
         }
         SwitchToMode "Normal"
