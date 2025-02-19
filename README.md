@@ -47,14 +47,15 @@ Plugin key bindings are:
 > Key bindings prefixed with <kbd>Ctrl +</kbd> might interfere with default key bindings
 
 
-| Key (default)                          | Emacs                      | Vim                 | Action                       |
-|:---------------------------------------|:---------------------------|:--------------------|:-----------------------------|
-| <kbd>Esc</kbd>                         | <kbd>Ctrl + g</kbd>        | <kbd>Ctrl + c</kbd> | Hide the plugin              |
-| <kbd>Up</kbd>                          | <kbd>Ctrl + p</kbd>        | <kbd>Ctrl + k</kbd> | Move up                      |
-| <kbd>Down</kbd>                        | <kbd>Ctrl + n</kbd>        | <kbd>Ctrl + j</kbd> | Move down                    |
-| <kbd>Backspace</kbd>                   |                            |                     | Delete character from search |
-| <kbd>Enter</kbd>                       |                            |                     | Switch to the selected tab   |
-| <kbd>(any character)</kbd>             |                            |                     | Start searching              |
+| Key (default)              | Emacs               | Vim                 | Action                                   |
+|:---------------------------|:--------------------|:--------------------|:-----------------------------------------|
+| <kbd>Esc</kbd>             | <kbd>Ctrl + g</kbd> | <kbd>Ctrl + c</kbd> | Hide the plugin                          |
+| <kbd>Up</kbd>              | <kbd>Ctrl + p</kbd> | <kbd>Ctrl + k</kbd> | Move up                                  |
+| <kbd>Down</kbd>            | <kbd>Ctrl + n</kbd> | <kbd>Ctrl + j</kbd> | Move down                                |
+| <kbd>Tab</kbd>             |                     |                     | Auto-complete search (selected tab name) |
+| <kbd>Backspace</kbd>       |                     |                     | Delete character from search             |
+| <kbd>Enter</kbd>           |                     |                     | Switch to the selected tab               |
+| <kbd>(any character)</kbd> |                     |                     | Start searching                          |
 
 # Development
 
@@ -64,6 +65,9 @@ cargo install zellij
 
 # Building the plugin
 cargo build
+
+# Building the plugin for release
+cargo build --release
 
 # Running in Zellij
 zellij --layout plugin-dev-workspace.kdl
