@@ -156,6 +156,36 @@ impl TabList {
         self.update_search_term();
     }
 
+    pub fn autocomplete_search(&mut self) {
+        if self.is_searching {
+            match self.selected_search_index {
+                Some(selected_tab) => {
+                    if let Some(search_result) = self.search_results.get(selected_tab) {
+                        self.search_term = search_result.tab_name.clone();
+                        self.update_search_term();
+                    }
+                }
+                None => {}
+            }
+        } else {
+            match self.selected_index {
+                Some(selected_tab) => {
+                    if let Some(tab_info) = self.tab_infos.get(selected_tab) {
+                        self.search_term = tab_info.name.clone();
+                        self.update_search_term();
+                    }
+                }
+                None => {}
+            }
+        }
+    }
+
+    pub fn reset(&mut self) {
+        self.search_term = String::new();
+        self.selected_index = Some(0);
+        self.update_search_term();
+    }
+
     fn render_search_results(&self, table_rows: usize, _table_columns: usize) -> Table {
         let mut table = Table::new().add_row(vec![" ", " ", " "]); // skip the title row
         let (first_row_index_to_render, last_row_index_to_render) = self.range_to_render(

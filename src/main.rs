@@ -59,6 +59,7 @@ impl State {
         match key.bare_key {
             BareKey::Esc if key.has_no_modifiers() => {
                 hide_self();
+                self.tabs.reset();
             }
             BareKey::Up if key.has_no_modifiers() => {
                 self.tabs.move_selection_up();
@@ -72,12 +73,18 @@ impl State {
                 self.tabs.pop_search_character();
                 should_render = true;
             }
+            BareKey::Tab if key.has_no_modifiers() => {
+                self.tabs.autocomplete_search();
+                should_render = true;
+            }
             BareKey::Enter if key.has_no_modifiers() => {
                 self.tabs.go_to_selected_tab();
+                self.tabs.reset();
                 should_render = true;
             }
             BareKey::Char('g' | 'c') if key.has_modifiers(&[KeyModifier::Ctrl]) => {
                 hide_self();
+                self.tabs.reset();
             }
             BareKey::Char('p' | 'k') if key.has_modifiers(&[KeyModifier::Ctrl]) => {
                 self.tabs.move_selection_up();
