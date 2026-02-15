@@ -10,6 +10,15 @@ pub struct TabList {
     search_results: Vec<SearchResult>,
     search_term: String,
     is_searching: bool,
+    // NOTE: Extract into a separate struct once it starts growing.
+    //       This is a state of the whole plugin, not just the tab list.
+    //
+    // FIXME: Once zellij releases a new version with a stable `tab_id` field,
+    //        we can replace this with a `previous_tab_id` field.
+    //
+    // WARNING: This might misbehave if the tab is closed, moved or opened.
+    previous_tab_position: Option<usize>,
+    previous_tab_position_filepath: String,
 }
 
 impl Default for TabList {
@@ -21,17 +30,33 @@ impl Default for TabList {
             search_results: Default::default(),
             search_term: Default::default(),
             is_searching: Default::default(),
+            previous_tab_position: Default::default(),
+            previous_tab_position_filepath: Default::default(),
         }
     }
 }
 
 impl TabList {
+    pub fn load(&mut self, namespace: String) {
+        self.previous_tab_position_filepath = format!("/tmp/zbuffers.{}.prev", namespace);
+
+        if let Ok(content) = std::fs::read_to_string(&self.previous_tab_position_filepath) {
+            self.previous_tab_position = content.trim().parse().ok();
+            let _ = std::fs::remove_file(&self.previous_tab_position_filepath);
+        }
+    }
+
     pub fn update(&mut self, mut tab_infos: Vec<TabInfo>) {
+        let previous = self.previous_tab_position;
         tab_infos.sort_unstable_by(|a, b| {
             if a.active {
                 std::cmp::Ordering::Greater
             } else if b.active {
                 std::cmp::Ordering::Less
+            } else if Some(a.position) == previous {
+                std::cmp::Ordering::Less
+            } else if Some(b.position) == previous {
+                std::cmp::Ordering::Greater
             } else {
                 a.name.cmp(&b.name)
             }
@@ -127,6 +152,7 @@ impl TabList {
             match self.selected_search_index {
                 Some(selected_tab) => {
                     if let Some(search_result) = self.search_results.get(selected_tab) {
+                        self.save_previous_tab_position();
                         close_focus();
                         go_to_tab(search_result.tab_position as u32)
                     }
@@ -137,6 +163,7 @@ impl TabList {
             match self.selected_index {
                 Some(selected_tab) => {
                     if let Some(tab_info) = self.tab_infos.get(selected_tab) {
+                        self.save_previous_tab_position();
                         close_focus();
                         go_to_tab(tab_info.position as u32)
                     }
@@ -306,6 +333,12 @@ impl TabList {
             .color_range(0, ..)
         } else {
             Text::new(" ")
+        }
+    }
+
+    fn save_previous_tab_position(&self) {
+        if let Some(active_tab) = self.tab_infos.last() {
+            let _ = std::fs::write(&self.previous_tab_position_filepath, active_tab.position.to_string());
         }
     }
 

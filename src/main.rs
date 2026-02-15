@@ -19,6 +19,8 @@ impl ZellijPlugin for State {
         ]);
 
         subscribe(&[EventType::TabUpdate, EventType::Key]);
+
+        self.tabs.load(get_plugin_ids().zellij_pid.to_string());
     }
 
     fn update(&mut self, event: Event) -> bool {

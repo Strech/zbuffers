@@ -1,9 +1,9 @@
 [package]
 name = "zbuffers"
-version = "0.4.0"
+version = "0.5.0"
 authors = ["Sergey Fedorov <oni.strech@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-zellij-tile = "0.41.1"
+zellij-tile = "0.43.1"
 fuzzy-matcher = "0.3.7"
